@@ -1,0 +1,101 @@
+import pygame.mixer
+from Settings import *
+class Player(pygame.sprite.Sprite):
+    def __init__(self, pos, group, collision_sprites, enemies):
+        super().__init__(group)
+        self.collision_sprites = collision_sprites
+        self.enemies = enemies
+        # ------------------------------PLAYER IMAGES----------------------------------------------#
+        player_right = pygame.image.load('../Assets/Player/avocado-right.png').convert_alpha()
+        player_right = pygame.transform.scale_by(player_right, 1.5)
+        player_jump_right = pygame.image.load('../Assets/Player/avocado-jump_right.png').convert_alpha()
+        player_jump_right = pygame.transform.scale_by(player_jump_right, 1.5)
+
+        self.image_list = [player_right, player_jump_right]
+        self.player_images_index = 0
+        # self.animation_frame = 0
+        # ------------------------------PLAYER SOUNDS----------------------------------------------#
+
+        # ------------------------------BASICS---------------------------------------------------#
+        self.image = self.image_list[0]
+        self.rect = self.image.get_rect(center=pos)
+
+        self.GRAVITY = 0.8
+        self.AIR_RESISTANCE = -0.1
+        self.JUMP_HIGH = -10
+        self.SPEED = 10
+        self.start_pos = pos
+        self.in_air = False
+        self.direction = pygame.math.Vector2(0, 0)
+
+    def get_input(self):
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_UP]:
+            self.in_air = True
+            self.image = self.image_list[1]
+            self.direction.y = self.JUMP_HIGH
+        if keys[pygame.K_RIGHT]:
+            self.direction.x = 1
+            if self.in_air is not True:
+                self.image = self.image_list[0]
+        else:
+            self.direction.x = 0
+        if keys[pygame.K_SPACE]:
+            self.direction.y = self.JUMP_HIGH - 5
+            self.direction.x = self.SPEED
+
+    # def animation(self, dt):
+    #     self.animation_frame += 0.1 * dt * 60
+    #     if self.animation_frame >= len(self.image_list[self.player_images_index]):
+    #         self.animation_frame = 0
+    #     self.image = self.image_list[self.player_images_index][int(self.animation_frame)]
+
+    def gravity(self, dt):
+        self.direction.y += self.GRAVITY * dt * 60
+        self.rect.y += self.direction.y * dt * 60
+
+    def acceleration(self, dt):
+        if self.direction.x > 0:
+            self.direction.x += self.AIR_RESISTANCE * dt * 60
+        else:
+            self.direction.x = 0
+        self.rect.x += self.direction.x * dt * 60
+
+    def check_collision_objects(self):
+        hits = []
+        for sprite in self.collision_sprites:
+            if self.rect.colliderect(sprite):
+                hits.append(sprite)
+        for enemy in self.enemies:
+            if self.rect.colliderect(enemy):
+                hits.append(enemy)
+                if self.direction.y > 0:
+                    enemy.alive = False
+        return hits
+
+    def horizontal_collision(self, dt):
+        self.acceleration(dt)
+        collisions = self.check_collision_objects()
+        for tile in collisions:
+            if self.direction.x > 0:
+                self.rect.right = tile.rect.left
+                self.direction.x = 0
+            elif self.direction.x < 0:
+                self.rect.left = tile.rect.right
+                self.direction.x = 0
+
+    def vertical_collision(self, dt):
+        self.gravity(dt)
+        collisions = self.check_collision_objects()
+        for tile in collisions:
+            if self.direction.y > 0:
+                self.rect.bottom = tile.rect.top
+                self.direction.y = 0
+            elif self.direction.y < 0:
+                self.rect.top = tile.rect.bottom
+                self.direction.y = 0
+
+    def update(self, dt):
+        self.get_input()
+        self.vertical_collision(dt)
+        self.horizontal_collision(dt)
