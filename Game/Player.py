@@ -21,12 +21,18 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=pos)
 
         self.GRAVITY = 0.8
-        self.AIR_RESISTANCE = -0.1
+        self.LAUNCH_POWER = 8
         self.JUMP_HIGH = -10
         self.SPEED = 10
         self.start_pos = pos
+        self.is_launched = False
         self.in_air = False
         self.direction = pygame.math.Vector2(0, 0)
+
+        self.VELOCITY_X = 10
+        self.VELOCITY_Y = 10
+        self.gravity_velocity = self.GRAVITY
+        self.launch_velocity = self.LAUNCH_POWER
 
     def get_input(self):
         keys = pygame.key.get_pressed()
@@ -41,8 +47,9 @@ class Player(pygame.sprite.Sprite):
         else:
             self.direction.x = 0
         if keys[pygame.K_SPACE]:
-            self.direction.y = self.JUMP_HIGH - 5
-            self.direction.x = self.SPEED
+            self.is_launched = True
+            self.in_air = True
+
 
     # def animation(self, dt):
     #     self.animation_frame += 0.1 * dt * 60
@@ -51,15 +58,28 @@ class Player(pygame.sprite.Sprite):
     #     self.image = self.image_list[self.player_images_index][int(self.animation_frame)]
 
     def gravity(self, dt):
-        self.direction.y += self.GRAVITY * dt * 60
-        self.rect.y += self.direction.y * dt * 60
+        # velocity of gravity = gravity * time
+        # velocity of gravity increases after player reach max height and start falling down
+        time = int(pygame.time.get_ticks() / 1000)
+        previous_time = time
 
-    def acceleration(self, dt):
-        if self.direction.x > 0:
-            self.direction.x += self.AIR_RESISTANCE * dt * 60
-        else:
-            self.direction.x = 0
-        self.rect.x += self.direction.x * dt * 60
+        one_sec = time > previous_time
+        reached_max_height = self.direction.y > 0
+        if one_sec and self.in_air and reached_max_height:
+            self.gravity_velocity += self.GRAVITY * dt * 60
+
+        if not self.is_launched:
+            self.direction.y += self.gravity_velocity * dt * 60
+            self.rect.y += self.direction.y * dt * 60
+
+    def avocado_launch(self, dt):
+        if self.is_launched:
+            self.direction.y -= self.launch_velocity * dt * 60
+            self.launch_velocity -= self.gravity_velocity * dt * 60
+            self.rect.y += self.direction.y * dt * 60
+            if self.launch_velocity <= 0:
+                self.is_launched = False
+                self.launch_velocity = self.LAUNCH_POWER
 
     def check_collision_objects(self):
         hits = []
@@ -74,7 +94,6 @@ class Player(pygame.sprite.Sprite):
         return hits
 
     def horizontal_collision(self, dt):
-        self.acceleration(dt)
         collisions = self.check_collision_objects()
         for tile in collisions:
             if self.direction.x > 0:
@@ -85,17 +104,19 @@ class Player(pygame.sprite.Sprite):
                 self.direction.x = 0
 
     def vertical_collision(self, dt):
-        self.gravity(dt)
         collisions = self.check_collision_objects()
         for tile in collisions:
             if self.direction.y > 0:
                 self.rect.bottom = tile.rect.top
+                self.in_air = False
+                self.gravity_velocity = self.GRAVITY
                 self.direction.y = 0
             elif self.direction.y < 0:
                 self.rect.top = tile.rect.bottom
-                self.direction.y = 0
 
     def update(self, dt):
         self.get_input()
+        self.avocado_launch(dt)
+        self.gravity(dt)
         self.vertical_collision(dt)
         self.horizontal_collision(dt)
