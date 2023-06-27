@@ -21,7 +21,8 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=pos)
 
         self.GRAVITY = 0.8
-        self.LAUNCH_POWER = 8
+        self.LAUNCH_POWER = 10
+
         self.JUMP_HIGH = -10
         self.SPEED = 10
         self.start_pos = pos

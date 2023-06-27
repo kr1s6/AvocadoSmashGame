@@ -1,3 +1,5 @@
+import platform
+
 from Settings import *
 from Player import Player
 class Level:
@@ -17,6 +19,7 @@ class CameraGroup(pygame.sprite.Group):
         super().__init__()
         self.SURFACE = pygame.display.get_surface()
         self.offset = pygame.math.Vector2(0, LEVEL_HIGH - HIGH)
+        self.initial_offset_y = 5632
         # ------------------------------LEVEL 1 GRAPHIC----------------------------------------------#
         self.background = pygame.image.load('../Assets/Level1/background_lvl1.png').convert()
         self.background = pygame.transform.scale_by(self.background, 8)
@@ -28,6 +31,9 @@ class CameraGroup(pygame.sprite.Group):
             self.offset.x = player.rect.centerx - WIDTH/2
         if player.rect.centery <= (LEVEL_HIGH - HIGH/2):
             self.offset.y = player.rect.centery - HIGH/2
+        #----fixed bug with wrong self.offset.y----
+        if player.rect.centery >= (LEVEL_HIGH - HIGH/2):
+            self.offset.y = self.initial_offset_y
         # ------------------------------DRAWING GRAPHICS CENTERED ON PLAYER---------------------------#
         background_offset = self.background_rect.topleft
         self.SURFACE.blit(self.background, background_offset)
