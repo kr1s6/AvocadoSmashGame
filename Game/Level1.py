@@ -42,7 +42,6 @@ class Level1(Level):
             previous_time = time.time()
             # --------------------------------MAIN ACTIONS-------------------------------------#
             self.SURFACE.fill('black')
-            print(self.player.rect.midbottom)
             self.all_sprites.custom_draw(self.player)
             # self.front_sprites.custom_draw(self.player)
             self.all_sprites.update(dt)

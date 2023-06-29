@@ -1,5 +1,3 @@
-import platform
-
 from Settings import *
 from Player import Player
 class Level:
