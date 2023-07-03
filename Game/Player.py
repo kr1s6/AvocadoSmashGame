@@ -6,18 +6,27 @@ class Player(pygame.sprite.Sprite):
         self.collision_sprites = collision_sprites
         self.enemies = enemies
         # ------------------------------PLAYER IMAGES----------------------------------------------#
+        player_left = pygame.image.load('../Assets/Player/avocado-left.png').convert_alpha()
+        player_left2 = pygame.image.load('../Assets/Player/avocado-left2.png').convert_alpha()
         player_right = pygame.image.load('../Assets/Player/avocado-right.png').convert_alpha()
-        player_right = pygame.transform.scale_by(player_right, 1.5)
+        player_right2 = pygame.image.load('../Assets/Player/avocado-right2.png').convert_alpha()
         player_jump_right = pygame.image.load('../Assets/Player/avocado-jump_right.png').convert_alpha()
-        player_jump_right = pygame.transform.scale_by(player_jump_right, 1.5)
+        player_jump_left = pygame.image.load('../Assets/Player/avocado-jump_left.png').convert_alpha()
+        self.image_list = [[player_right, player_right2], [player_left, player_left2], player_jump_left,
+                           player_jump_right]
+        self.images_index = 1
+        self.animation_frame = 0
 
-        self.image_list = [player_right, player_jump_right]
-        self.player_images_index = 0
-        # self.animation_frame = 0
+        for i in range(len(self.image_list)):
+            if hasattr(self.image_list[i], '__iter__'):
+                for j in range(len(self.image_list[i])):
+                    self.image_list[i][j] = pygame.transform.scale_by(self.image_list[i][j], 1.5)
+            else:
+                self.image_list[i] = pygame.transform.scale_by(self.image_list[i], 1.5)
         # ------------------------------PLAYER SOUNDS----------------------------------------------#
 
         # ------------------------------BASICS---------------------------------------------------#
-        self.image = self.image_list[0]
+        self.image = self.image_list[0][0]
         self.rect = self.image.get_rect(center=pos)
 
         self.GRAVITY = 0.8
@@ -36,26 +45,16 @@ class Player(pygame.sprite.Sprite):
 
     def get_input(self):
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_UP]:
-            self.in_air = True
-            self.image = self.image_list[1]
-        if keys[pygame.K_RIGHT]:
-            self.direction.x = 1
-            if self.in_air is not True:
-                self.image = self.image_list[0]
-        else:
-            self.direction.x = 0
-        # if keys[pygame.K_SPACE] and not self.space_pressed:
-        if keys[pygame.K_SPACE]:
+        if keys[pygame.K_SPACE] and not self.space_pressed:
             self.space_pressed = True
             self.is_launched = True
             self.in_air = True
 
-    # def animation(self, dt):
-    #     self.animation_frame += 0.1 * dt * 60
-    #     if self.animation_frame >= len(self.image_list[self.player_images_index]):
-    #         self.animation_frame = 0
-    #     self.image = self.image_list[self.player_images_index][int(self.animation_frame)]
+    def animation(self, dt):
+        self.animation_frame += 0.1 * dt * 60
+        if self.animation_frame >= len(self.image_list[self.images_index]):
+            self.animation_frame = 0
+        self.image = self.image_list[self.images_index][int(self.animation_frame)]
 
     def gravity(self, dt):
         # velocity of gravity = gravity * time
@@ -71,7 +70,6 @@ class Player(pygame.sprite.Sprite):
         if not self.is_launched:
             self.direction.y += self.gravity_velocity * dt * 60
             self.rect.y += self.direction.y * dt * 60
-        print("gravity_velocity = ", self.gravity_velocity)
 
     def avocado_launch(self, dt):
         if self.is_launched:
