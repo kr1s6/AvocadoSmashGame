@@ -1,5 +1,6 @@
 from Settings import *
 from Player import Player
+from CannonLvl1 import CannonLvl1
 class Level:
     def __init__(self):
         # ------------------------------SPRITE GROUPS----------------------------------------------#
@@ -8,8 +9,10 @@ class Level:
         # self.front_sprites = FrontCameraGroup()
         self.collision_sprites = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
+        # ---------------------------------------CANNON---------------------------------------------------#
+        CannonLvl1((150, LEVEL_HIGH - 50), self.all_sprites)
         # -------------------------------------PLAYER----------------------------------------------------#
-        self.player = Player((100, LEVEL_HIGH - 70), [self.all_sprites, self.player_group], self.collision_sprites,
+        self.player = Player((300, LEVEL_HIGH - 70), [self.all_sprites, self.player_group], self.collision_sprites,
                              self.enemies)
 
 class CameraGroup(pygame.sprite.Group):
@@ -17,7 +20,7 @@ class CameraGroup(pygame.sprite.Group):
         super().__init__()
         self.SURFACE = pygame.display.get_surface()
         self.offset = pygame.math.Vector2(0, LEVEL_HIGH - HIGH)
-        self.initial_offset_y = 5632
+        self.initial_offset_y = LEVEL_HIGH - HIGH
         # ------------------------------LEVEL 1 GRAPHIC----------------------------------------------#
         self.background = pygame.image.load('../Assets/Level1/background_lvl1.png').convert()
         self.background = pygame.transform.scale_by(self.background, 8)

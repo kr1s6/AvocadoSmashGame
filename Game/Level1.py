@@ -10,13 +10,12 @@ class Level1(Level):
         super().__init__()
         self.SURFACE = pygame.display.get_surface()
         self.running = True
-        # ------------------------------TILE MAP---------------------------------------------------#
+        # -------------------------------------TILE MAP---------------------------------------------------#
         tmx = load_pygame('../Assets/Level1/tilemap.tmx')
         ground_layer = tmx.get_layer_by_name('ground')
 
         for x, y, surface in ground_layer.tiles():
             pos = (x * 64, y * 64)
-            print(pos)
             Tile(pos, surface, [self.all_sprites, self.collision_sprites])
         # -------------------------------------SPRITES----------------------------------------------------#
         Slime((1000, LEVEL_HIGH - 70), [self.all_sprites, self.enemies], self.collision_sprites, self.player)
