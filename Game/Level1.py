@@ -42,8 +42,10 @@ class Level1(Level):
             # --------------------------------MAIN ACTIONS-------------------------------------#
             self.SURFACE.fill('black')
             self.all_sprites.custom_draw(self.player)
-            # self.front_sprites.custom_draw(self.player)
+            if not self.cannon_lvl1.stage3:
+                self.front_sprites.custom_draw(self.player)
             self.all_sprites.update(dt)
+            self.cannon_lvl1.cannon_enter(dt, self.player)
             # ----------------------------------------------------------------------------#
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
