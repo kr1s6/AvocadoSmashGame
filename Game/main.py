@@ -1,3 +1,5 @@
+import pygame
+
 from Settings import *
 from Button import Button
 from Saves import Saves
@@ -8,7 +10,7 @@ class Game:
         pygame.init()
         pygame.display.set_caption("Avocado Smash!")
         pygame.display.set_icon(pygame.image.load("../Assets/icon.png"))
-        self.SCREEN = pygame.display.set_mode((WIDTH, HIGH))
+        self.SCREEN = pygame.display.set_mode((WIDTH, HIGH), pygame.RESIZABLE)
         #----------------------------------------------------------------------------#
         self.saves = Saves()
         # ------------------------------MENU GRAPHICS----------------------------------------------#
