@@ -12,9 +12,10 @@ class Player(pygame.sprite.Sprite):
         player_right2 = pygame.image.load('../Assets/Player/avocado-right2.png').convert_alpha()
         player_jump_right = pygame.image.load('../Assets/Player/avocado-jump_right.png').convert_alpha()
         player_jump_left = pygame.image.load('../Assets/Player/avocado-jump_left.png').convert_alpha()
+        player_hide = pygame.image.load('../Assets/Player/avocado-hide.png').convert_alpha()
 
         self.image_list = [[player_right, player_right2], [player_left, player_left2], player_jump_left,
-                           player_jump_right]
+                           player_jump_right, player_hide]
         self.images_index = 0
         self.animation_frame = 0
 

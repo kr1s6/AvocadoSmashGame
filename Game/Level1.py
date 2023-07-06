@@ -5,6 +5,7 @@ import sys
 from Tilemap import *
 from Slime import Slime
 from Level import Level
+from Player import Player
 class Level1(Level):
     def __init__(self):
         super().__init__()
@@ -13,10 +14,17 @@ class Level1(Level):
         # -------------------------------------TILE MAP---------------------------------------------------#
         tmx = load_pygame('../Assets/Level1/tilemap.tmx')
         ground_layer = tmx.get_layer_by_name('ground')
+        back_ground_layer = tmx.get_layer_by_name('back_ground')
 
         for x, y, surface in ground_layer.tiles():
             pos = (x * 64, y * 64)
             Tile(pos, surface, [self.all_sprites, self.collision_sprites])
+        for x, y, surface in back_ground_layer.tiles():
+            pos = (x * 64, y * 64)
+            Tile(pos, surface, self.all_sprites)
+        # -------------------------------------PLAYER----------------------------------------------------#
+        self.player = Player((0, LEVEL_HIGH - TILE_SIZE), [self.all_sprites, self.player_group], self.collision_sprites,
+                             self.enemies)
         # -------------------------------------SPRITES----------------------------------------------------#
         Slime((1000, LEVEL_HIGH - 70), [self.all_sprites, self.enemies], self.collision_sprites, self.player)
 
@@ -41,11 +49,11 @@ class Level1(Level):
             previous_time = time.time()
             # --------------------------------MAIN ACTIONS-------------------------------------#
             self.SURFACE.fill('black')
-            self.all_sprites.custom_draw(self.player)
+            self.all_sprites.custom_draw(self.player, self.cannon_lvl1.stage3)
             if not self.cannon_lvl1.stage3:
                 self.front_sprites.custom_draw(self.player)
             self.all_sprites.update(dt)
-            self.cannon_lvl1.cannon_enter(dt, self.player)
+            self.cannon_lvl1.cannon_enter_cutscene(dt, self.player)
             # ----------------------------------------------------------------------------#
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:

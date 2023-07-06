@@ -1,5 +1,4 @@
 from Settings import *
-from Player import Player
 from CannonLvl1 import CannonLvl1
 class Level:
     def __init__(self):
@@ -10,10 +9,7 @@ class Level:
         self.collision_sprites = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
         # ---------------------------------------CANNON---------------------------------------------------#
-        self.cannon_lvl1 = CannonLvl1((150, LEVEL_HIGH - 50), [self.all_sprites, self.front_sprites])
-        # -------------------------------------PLAYER----------------------------------------------------#
-        self.player = Player((0, LEVEL_HIGH - TILE_SIZE), [self.all_sprites, self.player_group], self.collision_sprites,
-                             self.enemies)
+        self.cannon_lvl1 = CannonLvl1((2*TILE_SIZE, LEVEL_HIGH-TILE_SIZE), [self.all_sprites, self.front_sprites])
 
 class CameraGroup(pygame.sprite.Group):
     def __init__(self):
@@ -26,11 +22,11 @@ class CameraGroup(pygame.sprite.Group):
         self.background = pygame.transform.scale_by(self.background, 8)
         self.background_rect = self.background.get_rect(topleft=(0, 0))
 
-    def custom_draw(self, player):
+    def custom_draw(self, player, cannon_lvl1_stage3):
         # ------------------------------PLAYER CENTERING----------------------------------------------#
         if WIDTH/2 <= player.rect.centerx <= (LEVEL_WIDTH - WIDTH / 2):
             self.offset.x = player.rect.centerx - WIDTH/2
-        if player.rect.centery <= (LEVEL_HIGH - HIGH/2):
+        if player.rect.centery <= (LEVEL_HIGH - HIGH/2) and not cannon_lvl1_stage3:
             self.offset.y = player.rect.centery - HIGH/2
         #----fixed bug with wrong self.offset.y----
         if player.rect.centery >= (LEVEL_HIGH - HIGH/2):
