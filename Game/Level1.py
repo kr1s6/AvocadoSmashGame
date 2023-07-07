@@ -23,7 +23,7 @@ class Level1(Level):
             pos = (x * 64, y * 64)
             Tile(pos, surface, self.all_sprites)
         # -------------------------------------PLAYER----------------------------------------------------#
-        self.player = Player((0, LEVEL_HIGH - TILE_SIZE), [self.all_sprites, self.player_group], self.collision_sprites,
+        self.player = Player((0, LEVEL_HIGH-TILE_SIZE), [self.all_sprites, self.player_group], self.collision_sprites,
                              self.enemies)
         # -------------------------------------SPRITES----------------------------------------------------#
         Slime((1000, LEVEL_HIGH - 70), [self.all_sprites, self.enemies], self.collision_sprites, self.player)

@@ -1,3 +1,5 @@
+import math
+
 import pygame.mixer
 from Settings import *
 class Player(pygame.sprite.Sprite):
@@ -33,9 +35,11 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(midbottom=pos)
 
         self.GRAVITY = 0.8
+        self.AIR_RES = 0.01
         self.POWER_Y = 8
         self.POWER_X = 25
         self.gravity_velocity = self.GRAVITY
+        self.air_res_velocity = self.AIR_RES
         self.y_velocity = self.POWER_Y
         self.x_velocity = self.POWER_X
 
@@ -45,13 +49,34 @@ class Player(pygame.sprite.Sprite):
         self.gravity_activated = True
 
         self.direction = pygame.math.Vector2(0, 0)
+        # ------------------------------ROTATION VARIABLES--------------------------------------#
+        self.oryginal_image = self.image_list[2]
+        self.pivot = self.rect.center
+        self.angle = 0
+        self.able_rotation = False
         # ------------------------------TIMER---------------------------------------------------#
         self.previous_time = 0
+
+    def rotate_player(self, dt):
+        if self.able_rotation:
+            if self.direction.x == 0:
+                angle = 0
+            else:
+                angle = math.degrees(math.atan(-self.direction.y/self.direction.x))
+            # print("angle: ", int(angle))
+            self.pivot = pygame.math.Vector2(self.rect.center)
+            offset = self.rect.midtop - self.pivot
+            offset = offset.rotate(-angle)
+            print(f"Pivot: {self.pivot}, Offset: {offset}")
+            # self.image = pygame.transform.rotate(self.oryginal_image, angle)
+            # self.rect = self.image.get_rect(center=self.pivot - offset)
 
     def get_input(self):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_SPACE] and not self.space_pressed:
+            self.images_index = 3
             self.space_pressed = True
+            self.able_rotation = True
             self.is_launched = True
             self.in_air = True
 
@@ -68,13 +93,26 @@ class Player(pygame.sprite.Sprite):
         one_sec = time > self.previous_time
         self.previous_time = time
 
-        reached_max_height = (self.direction.y >= 0)
-        if one_sec and self.in_air and reached_max_height:
-            self.gravity_velocity += self.GRAVITY * dt * 60
+        # if one_sec and self.in_air and reached_max_height:
+        #     self.gravity_velocity += self.GRAVITY * dt * 60
+        # if not self.is_launched and self.gravity_activated:
+        #     self.direction.y += self.gravity_velocity * dt * 60
+        #     self.rect.y += self.direction.y * dt * 60
 
-        if not self.is_launched and self.gravity_activated:
-            self.direction.y += self.gravity_velocity * dt * 60
+        reached_max_height = (self.direction.y >= 0)
+        if self.direction.y > 0 or self.direction.y < 0:
+            if one_sec and reached_max_height:
+                self.gravity_velocity += self.GRAVITY
+            self.direction.y += self.gravity_velocity
             self.rect.y += self.direction.y * dt * 60
+
+        # print(f"PLAYER direction y: {self.direction.y}, MAX_HIGH: {reached_max_height}")
+
+    def air_resistance(self):
+        self.air_res_velocity = self.AIR_RES * self.direction.x
+        if self.direction.x > 0 or self.direction.x < 0:
+            # print("air: ", self.air_res_velocity)
+            self.direction.x -= self.air_res_velocity
 
     def avocado_launch(self, dt):
         if self.is_launched:
@@ -86,7 +124,7 @@ class Player(pygame.sprite.Sprite):
                 self.y_velocity = self.POWER_Y
 
         if self.in_air:
-            self.direction.x = self.x_velocity * dt * 60
+            self.direction.x = self.x_velocity
             self.rect.x += self.direction.x * dt * 60
 
     def check_collision_objects(self):
@@ -133,5 +171,7 @@ class Player(pygame.sprite.Sprite):
         self.get_input()
         self.avocado_launch(dt)
         self.gravity(dt)
+        self.air_resistance()
+        self.rotate_player(dt)
         self.vertical_collision()
         self.horizontal_collision()
