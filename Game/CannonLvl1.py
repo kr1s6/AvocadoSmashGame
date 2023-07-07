@@ -22,7 +22,7 @@ class CannonLvl1(pygame.sprite.Sprite):
         self.stage3 = True
         self._stage4 = True
         self._stage5 = True
-        self.JUMP_HIGH = -25
+        self.JUMP_HIGH = -30
 
     def rotate_on_pivot(self, dt, angle):
         if 0 <= self.angle <= 45:
@@ -32,28 +32,30 @@ class CannonLvl1(pygame.sprite.Sprite):
             self.rect = self.image.get_rect(center=offset)
 
     def cannon_enter_cutscene(self, dt, player):
-        if player.rect.x < 250 and self._stage1:
-            player.direction.x = 1 * dt * 60
-            player.rect.x += player.direction.x * 5 * dt * 60
+        player.able_rotation = True
+        if player.rect.x < 320 and self._stage1:
+            player.direction.x = 4
+            player.rect.x += player.direction.x * dt * 60
             player.animation(dt)
-        elif self._stage2:  # avocado jump on top of the cannon
+        elif self._stage2:  # avocado jump to the cannon
             self._stage1 = False
             player.image = player.image_list[1][0]
             player.image = player.image_list[2]
-            player.direction.y = self.JUMP_HIGH * dt * 60
+            player.direction.y = self.JUMP_HIGH
+            player.direction.x = 15
+            player.able_rotation = True
             self._stage2 = False
         elif self.stage3:  # avocado standing on top of the cannon
-            player.direction.x = -1 * dt * 60
-            player.rect.x += player.direction.x * 3 * dt * 60
-            if player.rect.midbottom[0] <= self.rect.midtop[0]:
-                player.gravity_activated = False
-                player.rect.midbottom = self.rect.midtop
-                self.stage3 = False
-        elif self._stage4:  # avocado go into cannon
-            player.direction.y = 1 * dt * 60
-            player.rect.y += player.direction.y * dt * 60
-            if player.rect.top >= self.rect.top:
-                player.image = player.image_list[4]
-                self._stage4 = False
-        elif self._stage5:
-            self.rotate_on_pivot(dt, 1)
+            player.rect.x += player.direction.x * dt * 60
+            # if player.rect.midtop[0] <= self.rect.midtop[0]:
+                # player.gravity_activated = False
+                # player.rect.midbottom = self.rect.midtop
+                # self.stage3 = False
+        # elif self._stage4:  # avocado go into cannon
+        #     player.direction.y = 1 * dt * 60
+        #     player.rect.y += player.direction.y * dt * 60
+        #     if player.rect.top >= self.rect.top:
+        #         player.image = player.image_list[4]
+        #         self._stage4 = False
+        # elif self._stage5:
+        #     self.rotate_on_pivot(dt, 1)
