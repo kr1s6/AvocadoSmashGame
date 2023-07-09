@@ -22,11 +22,11 @@ class CameraGroup(pygame.sprite.Group):
         self.background = pygame.transform.scale_by(self.background, 8)
         self.background_rect = self.background.get_rect(topleft=(0, 0))
 
-    def custom_draw(self, player, cannon_lvl1_stage3):
+    def custom_draw(self, player):
         # ------------------------------PLAYER CENTERING----------------------------------------------#
         if WIDTH/2 <= player.rect.centerx <= (LEVEL_WIDTH - WIDTH / 2):
             self.offset.x = player.rect.centerx - WIDTH/2
-        if player.rect.centery <= (LEVEL_HIGH - HIGH/2) and not cannon_lvl1_stage3:
+        if player.rect.centery <= (LEVEL_HIGH - HIGH/2):
             self.offset.y = player.rect.centery - HIGH/2
         #----fixed bug with wrong self.offset.y----
         if player.rect.centery >= (LEVEL_HIGH - HIGH/2):

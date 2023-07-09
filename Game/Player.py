@@ -50,8 +50,6 @@ class Player(pygame.sprite.Sprite):
 
         self.direction = pygame.math.Vector2(0, 0)
         # ------------------------------ROTATION VARIABLES--------------------------------------#
-        self.oryginal_image = self.image_list[2]
-        self.pivot = self.rect.center
         self.angle = 0
         self.able_rotation = False
         # ------------------------------TIMER---------------------------------------------------#
@@ -62,13 +60,12 @@ class Player(pygame.sprite.Sprite):
             if self.direction.x == 0:
                 angle = 0
             else:
-                angle = math.degrees(math.atan(-self.direction.y/self.direction.x))
-            # print("angle: ", int(angle))
+                angle = math.degrees(math.atan(-self.direction.y/-self.direction.x))
             self.pivot = pygame.math.Vector2(self.rect.center)
             offset = self.rect.midtop - self.pivot
             offset = offset.rotate(-angle)
-            print(f"Pivot: {self.pivot}, Offset: {offset}")
-            # self.image = pygame.transform.rotate(self.oryginal_image, angle)
+            print(f"Pivot: {self.pivot}, Offset: {offset}, ANGLE: {int(angle)}")
+            self.image = pygame.transform.rotate(self.oryginal_image, angle)
             # self.rect = self.image.get_rect(center=self.pivot - offset)
 
     def get_input(self):
@@ -87,31 +84,23 @@ class Player(pygame.sprite.Sprite):
         self.image = self.image_list[self.images_index][int(self.animation_frame)]
 
     def gravity(self, dt):
-        # velocity of gravity = gravity * time
-        # velocity of gravity increases after player reach max height and start falling down
         time = int(pygame.time.get_ticks() / 1000)
         one_sec = time > self.previous_time
         self.previous_time = time
 
-        # if one_sec and self.in_air and reached_max_height:
-        #     self.gravity_velocity += self.GRAVITY * dt * 60
-        # if not self.is_launched and self.gravity_activated:
-        #     self.direction.y += self.gravity_velocity * dt * 60
-        #     self.rect.y += self.direction.y * dt * 60
+        if self.direction.y < 0:
+            self.in_air = True
 
-        reached_max_height = (self.direction.y >= 0)
-        if self.direction.y > 0 or self.direction.y < 0:
+        if self.in_air and self.gravity_activated:
+            self.rect.y += self.direction.y * dt * 60
+            reached_max_height = (self.direction.y >= 0)
             if one_sec and reached_max_height:
                 self.gravity_velocity += self.GRAVITY
             self.direction.y += self.gravity_velocity
-            self.rect.y += self.direction.y * dt * 60
-
-        # print(f"PLAYER direction y: {self.direction.y}, MAX_HIGH: {reached_max_height}")
 
     def air_resistance(self):
         self.air_res_velocity = self.AIR_RES * self.direction.x
         if self.direction.x > 0 or self.direction.x < 0:
-            # print("air: ", self.air_res_velocity)
             self.direction.x -= self.air_res_velocity
 
     def avocado_launch(self, dt):
@@ -123,9 +112,9 @@ class Player(pygame.sprite.Sprite):
                 self.is_launched = False
                 self.y_velocity = self.POWER_Y
 
-        if self.in_air:
-            self.direction.x = self.x_velocity
-            self.rect.x += self.direction.x * dt * 60
+        # if self.in_air:
+        #     self.direction.x = self.x_velocity
+        #     self.rect.x += self.direction.x * dt * 60
 
     def check_collision_objects(self):
         hits = []
@@ -172,6 +161,6 @@ class Player(pygame.sprite.Sprite):
         self.avocado_launch(dt)
         self.gravity(dt)
         self.air_resistance()
-        self.rotate_player(dt)
+        # self.rotate_player(dt)
         self.vertical_collision()
         self.horizontal_collision()
