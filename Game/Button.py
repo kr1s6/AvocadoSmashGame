@@ -4,11 +4,17 @@ class Button(pygame.sprite.Sprite):
     def __init__(self, pos, image):
         super().__init__()
         self.SURFACE = pygame.display.get_surface()
-        self.button = pygame.image.load(f'../Assets/Menu/{image}').convert_alpha()
-        self.button = pygame.transform.scale_by(self.button, 7)
+        self.width, self.height = self.SURFACE.get_size()
+        self.image = pygame.image.load(f'../Assets/Menu/{image}').convert_alpha()
+        self.button = pygame.transform.scale(self.image, (self.width*61/160, self.height*16/90))
         self.rect = self.button.get_rect(topleft=pos)
         # ----------------------------------------------------------------------------------------#
         self.clicked = False
+
+    def update_size(self, pos):
+        self.width, self.height = self.SURFACE.get_size()
+        self.rect = self.button.get_rect(topleft=pos)
+        self.button = pygame.transform.scale(self.image, (self.width * 61 / 160, self.height * 16 / 90))
 
     def draw(self):
         mouse_pos = pygame.mouse.get_pos()

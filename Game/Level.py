@@ -19,7 +19,7 @@ class CameraGroup(pygame.sprite.Group):
         self.initial_offset_y = LEVEL_HIGH - HIGH
         # ------------------------------LEVEL 1 GRAPHIC----------------------------------------------#
         self.background = pygame.image.load('../Assets/Level1/background_lvl1.png').convert()
-        self.background = pygame.transform.scale_by(self.background, 8)
+        self.background = pygame.transform.scale_by(self.background, 6)
         self.background_rect = self.background.get_rect(topleft=(0, 0))
 
     def custom_draw(self, player):

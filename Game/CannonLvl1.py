@@ -1,8 +1,6 @@
-import pygame
-
 from Settings import *
-import math
 from CannonBaseLvl1 import CannonBaseLvl1
+
 class CannonLvl1(pygame.sprite.Sprite):
     def __init__(self, pos, group):
         super().__init__(group[0])

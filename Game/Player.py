@@ -1,5 +1,3 @@
-import math
-
 import pygame.mixer
 from Settings import *
 class Player(pygame.sprite.Sprite):
