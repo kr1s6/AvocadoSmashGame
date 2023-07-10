@@ -1,7 +1,6 @@
 import pygame.sprite
 from pytmx.util_pygame import load_pygame
 import time
-import sys
 from Tilemap import *
 from Slime import Slime
 from Level import Level

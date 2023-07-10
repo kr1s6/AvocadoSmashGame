@@ -1,9 +1,6 @@
-import pygame
-
 from Settings import *
 from Button import Button
 from Saves import Saves
-import sys
 
 class Game:
     def __init__(self):
@@ -11,15 +8,16 @@ class Game:
         pygame.display.set_caption("Avocado Smash!")
         pygame.display.set_icon(pygame.image.load("../Assets/icon.png"))
         self.SCREEN = pygame.display.set_mode((WIDTH, HIGH), pygame.RESIZABLE)
+        self.width, self.height = self.SCREEN.get_size()
         #----------------------------------------------------------------------------#
         self.saves = Saves()
         # ------------------------------MENU GRAPHICS----------------------------------------------#
-        self.background = pygame.image.load('../Assets/Menu/background_menu.png').convert()
-        self.background = pygame.transform.scale_by(self.background, 8)
+        self.background_image = pygame.image.load('../Assets/Menu/background_menu.png').convert()
+        self.background = pygame.transform.scale(self.background_image, self.SCREEN.get_size())
         self.background_rect = self.background.get_rect(topleft=(0, 0))
         # --------------------------------BUTTONS--------------------------------------------------#
-        self.start = Button((WIDTH / 2 - 100, 150), "start_button.png")
-        self.end = Button((WIDTH / 2 - 100, 350), "end_button.png")
+        self.start = Button((self.width*19/48, self.height*7/25), "start_button.png")
+        self.end = Button((self.width*19/48, self.height*11/20), "end_button.png")
 
     def run(self):
         while True:
@@ -31,8 +29,15 @@ class Game:
             if self.start.clicked:
                 self.saves.run()
                 self.start.clicked = False
-
             for event in pygame.event.get():
+                if event.type == VIDEORESIZE:
+                    event_h = int(event.w)*9 / 16
+                    self.SCREEN = pygame.display.set_mode((int(event.w), event_h), pygame.RESIZABLE)
+                    self.background = pygame.transform.scale(self.background_image, self.SCREEN.get_size())
+                    self.width, self.height = self.SCREEN.get_size()
+                    # ---------------BUTTONS-----------------#
+                    self.start.update_size((self.width*19/48, self.height * 7 / 25))
+                    self.end.update_size((self.width*19/48, self.height * 11 / 20))
                 if event.type == pygame.QUIT or self.end.clicked:
                     pygame.quit()
                     sys.exit()
