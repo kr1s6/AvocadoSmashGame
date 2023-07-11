@@ -148,8 +148,8 @@ class Player(pygame.sprite.Sprite):
             elif self.direction.y < 0:
                 self.rect.top = tile.rect.bottom
         # ----fixed bug with falling through ground tiles----
-        if self.rect.bottom >= LEVEL_HIGH:
-            self.rect.bottom = LEVEL_HIGH - TILE_SIZE
+        if self.rect.bottom >= LEVEL_HEIGHT:
+            self.rect.bottom = LEVEL_HEIGHT - TILE_SIZE
             self.in_air = False
             self.gravity_velocity = self.GRAVITY
             self.direction.y = 0

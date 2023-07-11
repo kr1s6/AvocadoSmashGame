@@ -3,42 +3,29 @@ from pytmx.util_pygame import load_pygame
 import time
 from Tilemap import *
 from Slime import Slime
-from Level import Level
+from Level import Level, Resize
 from Player import Player
 class Level1(Level):
     def __init__(self):
         super().__init__()
-        self.SURFACE = pygame.display.get_surface()
         self.running = True
         # -------------------------------------TILE MAP---------------------------------------------------#
         tmx = load_pygame('../Assets/Level1/tilemap.tmx')
         ground_layer = tmx.get_layer_by_name('ground')
         back_ground_layer = tmx.get_layer_by_name('back_ground')
+        self.tile_width, self.tile_high = (tmx.tilewidth, tmx.tileheight)
 
         for x, y, surface in ground_layer.tiles():
-            pos = (x * 64, y * 64)
+            pos = (x * self.tile_width, y * self.tile_high)
             Tile(pos, surface, [self.all_sprites, self.collision_sprites])
         for x, y, surface in back_ground_layer.tiles():
-            pos = (x * 64, y * 64)
+            pos = (x * self.tile_width, y * self.tile_high)
             Tile(pos, surface, self.all_sprites)
         # -------------------------------------PLAYER----------------------------------------------------#
-        self.player = Player((0, LEVEL_HIGH-TILE_SIZE), [self.all_sprites, self.player_group], self.collision_sprites,
+        self.player = Player((0, LEVEL_HEIGHT-TILE_SIZE), [self.all_sprites, self.player_group], self.collision_sprites,
                              self.enemies)
         # -------------------------------------SPRITES----------------------------------------------------#
-        Slime((1000, LEVEL_HIGH - 70), [self.all_sprites, self.enemies], self.collision_sprites, self.player)
-
-    # def player_killed(self):
-    #     if self.player.lives <= 0:
-    #         self.player.kill()
-    #         self.running = False
-    #     if self.player.rect.centery >= HIGH:
-    #         if self.player.lives >= 3:
-    #             self.player.lives = 1
-    #         else:
-    #             self.player.lives -= 1
-    #         self.player.smaller()
-    #         self.player.rect.center = self.player.pos
-    #         self.all_sprites.offset = pygame.math.Vector2(0, 0)
+        Slime((1000, LEVEL_HEIGHT - TILE_SIZE), [self.all_sprites, self.enemies], self.collision_sprites, self.player)
 
     def run(self):
         # ---------------------------------------------------------------------------------#
@@ -54,6 +41,10 @@ class Level1(Level):
             self.cannon_lvl1.cannon_enter_cutscene(dt, self.player)
             # ----------------------------------------------------------------------------#
             for event in pygame.event.get():
+                if event.type == VIDEORESIZE:
+                    event_h = int(event.w) * 9 / 16
+                    Resize.SURFACE = pygame.display.set_mode((int(event.w), event_h), pygame.RESIZABLE)
+                    Resize.width, Resize.high = self.SURFACE.get_size()
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
