@@ -86,5 +86,5 @@ class Slime(pygame.sprite.Sprite):
         self.horizontal_collision(dt)
         self.vertical_collision(dt)
 
-        if self.rect.x <= -60 or self.rect.y >= LEVEL_HIGH:
+        if self.rect.x <= -60 or self.rect.y >= LEVEL_HEIGHT:
             self.kill()

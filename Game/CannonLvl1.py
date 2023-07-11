@@ -1,22 +1,25 @@
 from Settings import *
+from Resize import Resize
 from CannonBaseLvl1 import CannonBaseLvl1
 
 class CannonLvl1(pygame.sprite.Sprite):
     def __init__(self, pos, group):
         super().__init__(group[0])
-        self.SURFACE = pygame.display.get_surface()
         self.all_sprites = group[0]
         self.front_sprites = group[1]
+
+        self.SURFACE = pygame.display.get_surface()
+        self.width, self.height = self.SURFACE.get_size()
         # ------------------------------CANNON IMAGE----------------------------------------------#
         self._base = CannonBaseLvl1(pos, group[0])
-        cannon = pygame.image.load('../Assets/cannon.png').convert_alpha()
-        cannon = pygame.transform.scale_by(cannon, 3)
+        self.cannon_image = pygame.image.load('../Assets/cannon.png').convert_alpha()
+        self.cannon = pygame.transform.scale(self.cannon_image, (self.width*1.29/6.4, self.height/8))
         # ------------------------------BASICS---------------------------------------------------#
         self.angle = 0
         self.pivot = self._base.rect.center  # core around which cannon will be rotating
-        offset = pygame.math.Vector2(cannon.get_width()/8, -cannon.get_height()/4)
+        offset = pygame.math.Vector2(self.cannon.get_width()/8, -self.cannon.get_height()/4)
         self.pos = self.pivot + offset
-        self.image = cannon
+        self.image = self.cannon
         self.oryginal_image = self.image
         self.rect = self.image.get_rect(center=self.pos)
         # ------------------------------CUTSCENE---------------------------------------------------#
