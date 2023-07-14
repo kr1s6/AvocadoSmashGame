@@ -76,6 +76,9 @@ class Slime(pygame.sprite.Sprite):
                 self.rect.top = tile.rect.bottom
                 self.direction.y = 0
 
+    def update_size(self):
+        pass
+
     def update(self, dt):
         if self.alive:
             self.slime_jump()

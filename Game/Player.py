@@ -1,6 +1,7 @@
 import pygame.mixer
 from Settings import *
-class Player(pygame.sprite.Sprite):
+from Resize import Resize
+class Player(pygame.sprite.Sprite, Resize):
     def __init__(self, pos, group, collision_sprites, enemies):
         super().__init__(group)
         self.collision_sprites = collision_sprites
@@ -19,12 +20,13 @@ class Player(pygame.sprite.Sprite):
         self.images_index = 0
         self.animation_frame = 0
 
+        self.size = (self.width*9/160, self.height*31/240)
         for i in range(len(self.image_list)):
             if hasattr(self.image_list[i], '__iter__'):
                 for j in range(len(self.image_list[i])):
-                    self.image_list[i][j] = pygame.transform.scale_by(self.image_list[i][j], 1.5)
+                    self.image_list[i][j] = pygame.transform.scale(self.image_list[i][j], self.size)
             else:
-                self.image_list[i] = pygame.transform.scale_by(self.image_list[i], 1.5)
+                self.image_list[i] = pygame.transform.scale(self.image_list[i], self.size)
 
         # ------------------------------PLAYER SOUNDS----------------------------------------------#
 
@@ -53,18 +55,24 @@ class Player(pygame.sprite.Sprite):
         # ------------------------------TIMER---------------------------------------------------#
         self.previous_time = 0
 
+    def update_size(self):
+        self.size = (self.width * 9 / 160, self.height * 31 / 240)
+        for i in range(len(self.image_list)):
+            if hasattr(self.image_list[i], '__iter__'):
+                for j in range(len(self.image_list[i])):
+                    self.image_list[i][j] = pygame.transform.scale(self.image_list[i][j], self.size)
+            else:
+                self.image_list[i] = pygame.transform.scale(self.image_list[i], self.size)
     def rotate_player(self, dt):
         if self.able_rotation:
-            if self.direction.x == 0:
-                angle = 0
+            if self.direction.x == 0 and self.direction.y >= 0:
+                self.angle = 180
+            elif self.direction.x == 0 and self.direction.y == 0:
+                self.angle = 0
             else:
-                angle = math.degrees(math.atan(-self.direction.y/-self.direction.x))
-            self.pivot = pygame.math.Vector2(self.rect.center)
-            offset = self.rect.midtop - self.pivot
-            offset = offset.rotate(-angle)
-            print(f"Pivot: {self.pivot}, Offset: {offset}, ANGLE: {int(angle)}")
-            self.image = pygame.transform.rotate(self.oryginal_image, angle)
-            # self.rect = self.image.get_rect(center=self.pivot - offset)
+                self.angle = (math.degrees(math.atan(-self.direction.y / self.direction.x))) + 90
+            # print(f"angle: {self.angle} self.dir.y: {self.direction.y}, self.dir.x: {self.direction.x}")
+            self.image = pygame.transform.rotate(self.oryginal_image, self.angle)
 
     def get_input(self):
         keys = pygame.key.get_pressed()

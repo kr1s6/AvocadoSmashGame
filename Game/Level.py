@@ -7,6 +7,7 @@ class Level(Resize):
         super().__init__()
         Resize.SURFACE = pygame.display.get_surface()
         Resize.width, Resize.height = Resize.SURFACE.get_size()
+        Resize.tile_size = TILE_SIZE * Resize.width / WIDTH
         # ------------------------------SPRITE GROUPS----------------------------------------------#
         self.player_group = pygame.sprite.Group()
         self.all_sprites = CameraGroup()
@@ -14,7 +15,8 @@ class Level(Resize):
         self.collision_sprites = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
         # ---------------------------------------CANNON---------------------------------------------------#
-        self.cannon_lvl1 = CannonLvl1((2*TILE_SIZE, LEVEL_HEIGHT-TILE_SIZE), [self.all_sprites, self.front_sprites])
+        self.cannon_lvl1 = CannonLvl1((2*self.tile_size, LEVEL_HEIGHT-self.tile_size),
+                                      [self.all_sprites, self.front_sprites])
 
 class CameraGroup(pygame.sprite.Group, Resize):
     def __init__(self):
@@ -27,8 +29,6 @@ class CameraGroup(pygame.sprite.Group, Resize):
         self.background_rect = self.background.get_rect(topleft=(0, 0))
 
     def custom_draw(self, player):
-        # ------------------------------RESIZING----------------------------------#
-        self.background = pygame.transform.scale(self.background_image, self.SURFACE.get_size())
         # ------------------------------PLAYER CENTERING----------------------------------------------#
         if self.width/2 <= player.rect.centerx <= (LEVEL_WIDTH - self.width / 2):
             self.offset.x = player.rect.centerx - self.width/2
@@ -45,6 +45,12 @@ class CameraGroup(pygame.sprite.Group, Resize):
             offset_rect = sprite.rect.copy()
             offset_rect.center -= self.offset
             self.SURFACE.blit(sprite.image, offset_rect)
+
+    def update_size(self):
+        self.background = pygame.transform.scale(self.background_image, self.SURFACE.get_size())
+        # ------------------------------RESIZING----------------------------------#
+        for sprite in self.sprites():
+            sprite.update_size()
 
 class FrontCameraGroup(pygame.sprite.Group, Resize):
     def __init__(self):
@@ -66,3 +72,8 @@ class FrontCameraGroup(pygame.sprite.Group, Resize):
             offset_rect = sprite.rect.copy()
             offset_rect.center -= self.offset
             self.SURFACE.blit(sprite.image, offset_rect)
+
+    def update_size(self):
+        # ------------------------------RESIZING----------------------------------#
+        for sprite in self.sprites():
+            sprite.update_size()
