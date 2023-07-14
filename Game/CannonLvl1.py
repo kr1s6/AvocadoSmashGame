@@ -2,16 +2,13 @@ from Settings import *
 from Resize import Resize
 from CannonBaseLvl1 import CannonBaseLvl1
 
-class CannonLvl1(pygame.sprite.Sprite):
+class CannonLvl1(pygame.sprite.Sprite, Resize):
     def __init__(self, pos, group):
         super().__init__(group[0])
         self.all_sprites = group[0]
         self.front_sprites = group[1]
-
-        self.SURFACE = pygame.display.get_surface()
-        self.width, self.height = self.SURFACE.get_size()
         # ------------------------------CANNON IMAGE----------------------------------------------#
-        self._base = CannonBaseLvl1(pos, group[0])
+        self._base = CannonBaseLvl1(pos, self.all_sprites)
         self.cannon_image = pygame.image.load('../Assets/cannon.png').convert_alpha()
         self.cannon = pygame.transform.scale(self.cannon_image, (self.width*1.29/6.4, self.height/8))
         # ------------------------------BASICS---------------------------------------------------#
@@ -95,3 +92,16 @@ class CannonLvl1(pygame.sprite.Sprite):
 
         elif self._stage5:
             self.rotate_on_pivot(1)
+
+    def update_size(self):
+        self.cannon = pygame.transform.scale(self.cannon_image, (self.width*1.29/6.4, self.height/8))
+        self.oryginal_image = self.cannon
+        self.pivot = self._base.rect.center
+        offset = pygame.math.Vector2(self.cannon.get_width() / 8, -self.cannon.get_height() / 4)
+        self.pos = self.pivot + offset
+        self.image = self.cannon
+        self.rect = self.image.get_rect(center=self.pos)
+
+        self.image = pygame.transform.rotate(self.oryginal_image, self.angle)
+        offset = self.pivot + (self.pos - self.pivot).rotate(-self.angle)
+        self.rect = self.image.get_rect(center=offset)

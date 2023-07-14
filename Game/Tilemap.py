@@ -1,9 +1,17 @@
 from Settings import *
-class Tile(pygame.sprite.Sprite):
+from Resize import Resize
+class Tile(pygame.sprite.Sprite, Resize):
     def __init__(self, pos, surface, group):
         super().__init__(group)
+        self.oryginal_image = surface
         self.image = surface
+        self.image = pygame.transform.scale(self.oryginal_image, (self.tile_size, self.tile_size))
+        # self.pos = (x * self.tile_width, y * self.tile_height)
         self.rect = self.image.get_rect(topleft=pos)
+
+    def update_size(self):
+        Resize.tile_size = TILE_SIZE * self.width / WIDTH
+        self.image = pygame.transform.scale(self.oryginal_image, (self.tile_size, self.tile_size))
 
 # class BrickTile(pygame.sprite.Sprite):
 #     def __init__(self, pos, surface, group, player_group):
