@@ -1,5 +1,5 @@
 # AvocadoSmashGame
-PyGame in progres
+PyGame postponed.
 
 Game inspired "Flight of the Hamsters" game.
 
